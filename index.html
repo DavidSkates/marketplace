@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marketplace Interface</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Our Marketplace, <span id="username"></span>!</h1>
+      <!-- Navigation Links -->
+      <nav>
+        <a href="javascript:void(0);" onclick="showSection('addItemForm')"
+          >Add Item</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('searchForm')"
+          >Search Items</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('addReviewForm')"
+          >Add Review</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('userXItems')"
+          >High Rated Items</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('topPosters')"
+          >Top Posters</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('favoriteUsers')"
+          >Favorite Users</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('favoritesOfBoth')"
+          >Favorites of Both</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('noExcellentItems')"
+          >No Excellent Items</a
+        >
+        |
+        <a href="javascript:void(0);" onclick="showSection('onlyPoorReviews')"
+          >Only Poor Reviews</a
+        >
+        |
+        <a href="javascript:void(0);" id="logoutButton">Logout</a>
+      </nav>
+
+      <!-- Add Item Form -->
+      <section id="addItemSection" style="display: block">
+        <form id="addItemForm">
+          <h2>Add New Item</h2>
+          <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required />
+          </div>
+          <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+          </div>
+          <div>
+            <label for="category">Category:</label>
+            <input
+              type="text"
+              id="category"
+              name="category"
+              required
+              placeholder="electronic, cellphone, apple"
+            />
+          </div>
+          <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" required step=".01" />
+          </div>
+          <button type="submit">Submit</button>
+          <div
+            id="addItemMessageField"
+            style="width: 200px; overflow: hidden; word-wrap: break-word"
+          >
+            &nbsp;
+          </div>
+        </form>
+      </section>
+
+      <!-- Search Items Form -->
+      <section id="searchForm" style="display: none">
+        <form id="searchItemForm">
+          <h2>Search Items by Category</h2>
+          <div>
+            <label for="searchCategory">Category:</label>
+            <input type="text" id="searchCategory" name="category" required />
+          </div>
+          <div>
+            <label for="expensive">Show the most expensive items:</label>
+            <input type="checkbox" id="expensive" name="expensive" />
+          </div>
+          <button type="submit" id="searchItemButton">Search</button>
+          <div
+            id="searchItemMessageField"
+            style="width: 200px; overflow: hidden; word-wrap: break-word"
+          >
+            &nbsp;
+          </div>
+        </form>
+        <style>
+          #results th {
+            padding: 0 15px;
+          }
+        </style>
+        <div
+          id="results"
+          style="width: 400px; word-wrap: break-word; padding: 10px"
+        ></div>
+      </section>
+
+      <!-- Add Review Form -->
+      <section id="addReviewForm" style="display: none">
+        <form id="reviewForm">
+          <h2>Add a Review</h2>
+          <h2 id="itemName">Select an item</h2>
+          <div>
+            <label for="rating">Rating:</label>
+            <select id="rating" name="rating" required>
+              <option value="excellent">Excellent</option>
+              <option value="good">Good</option>
+              <option value="fair">Fair</option>
+              <option value="poor">Poor</option>
+            </select>
+          </div>
+          <div>
+            <label for="reviewDescription">Description:</label>
+            <textarea
+              id="reviewDescription"
+              name="description"
+              required
+            ></textarea>
+          </div>
+          <div
+            id="addReviewMessageField"
+            style="width: 200px; overflow: hidden; word-wrap: break-word"
+          >
+            &nbsp;
+          </div>
+          <button type="submit">Submit Review</button>
+        </form>
+      </section>
+
+      <!-- Items by User X with Good/Excellent Reviews -->
+      <section id="userXItems" style="display: none">
+        <h2>Items by User with High Ratings</h2>
+        <label for="userXSelect">Select User:</label>
+        <select id="userXSelect"></select>
+        <button onclick="fetchUserXItems()">Show Items</button>
+        <div id="userXItemsResults"></div>
+      </section>
+
+      <!-- Users Posting Most Items on Specific Date -->
+      <section id="topPosters" style="display: none">
+        <h2>Top Item Posters on Specific Date</h2>
+        <input type="date" id="specificDate" />
+        <button onclick="fetchTopPosters()">Show Top Posters</button>
+        <div id="topPostersResults"></div>
+      </section>
+
+      <!-- Favorite Users -->
+      <section id="favoriteUsers" style="display: none">
+        <h2>Favorite Users</h2>
+        <div id="favoriteUsersList"></div>
+      </section>
+
+      <!-- Favorites of Both Users X and Y -->
+      <section id="favoritesOfBoth" style="display: none">
+        <h2>Favorites of Both Users X and Y</h2>
+        <label for="userXDropdown">Select User X:</label>
+        <select id="userXDropdown" name="userX"></select>
+
+        <label for="userYDropdown">Select User Y:</label>
+        <select id="userYDropdown" name="userY"></select>
+
+        <button onclick="fetchFavoritesOfBoth()">Show Favorites</button>
+        <div id="favoritesOfBothResults"></div>
+      </section>
+
+      <!-- Users With No Excellent Items -->
+      <section id="noExcellentItems" style="display: none">
+        <h2>Users With No Excellent Items</h2>
+        <button onclick="fetchUsersWithNoExcellent()">Search Users</button>
+        <div id="noExcellentItemsResults"></div>
+      </section>
+
+      <!-- Users With Only Poor Reviews -->
+      <section id="onlyPoorReviews" style="display: none">
+        <h2>Users With Only Poor Reviews</h2>
+        <button onclick="fetchUsersWithOnlyPoor()">Search Users</button>
+        <div id="onlyPoorReviewsResults"></div>
+      </section>
+    </div>
+    <script>
+      // Check if user is logged in
+      fetch("index.php")
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.loggedin === false) {
+            window.location.href = "login.html";
+          } else {
+            // Check if the username is set
+            if (data.username) {
+              // Display the username
+              document.getElementById(
+                "username"
+              ).textContent = `${data.username}`;
+            } else {
+              console.error("Username not set in session");
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      // Function for logout button
+      document
+        .getElementById("logoutButton")
+        .addEventListener("click", function () {
+          fetch("logout.php")
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.loggedout === true) {
+                window.location.href = "login.html";
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+
+      // Function to toggle visibility of sections
+      function showSection(sectionId) {
+        const sections = [
+          "addItemForm",
+          "searchForm",
+          "addReviewForm",
+          "userXItems",
+          "topPosters",
+          "favoriteUsers",
+          "favoritesOfBoth",
+          "noExcellentItems",
+          "onlyPoorReviews",
+        ];
+
+        sections.forEach((id) => {
+          const section = document.getElementById(id);
+          section.style.display = id === sectionId ? "block" : "none";
+          // Clear message fields
+          document.getElementById("addReviewMessageField").innerText = "";
+        });
+      }
+
+      // Handling the submission of the Add Item form
+      document
+        .getElementById("addItemForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(this);
+
+          // Send the form data to the server
+          fetch("addItem.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              // Check if the response headers indicate JSON content
+              const contentType = response.headers.get("content-type");
+              if (!contentType || !contentType.includes("application/json")) {
+                throw new TypeError("Oops, we haven't got JSON!");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (data.status === "success") {
+                console.log("Item posted successfully");
+                const messageField = document.getElementById(
+                  "addItemMessageField"
+                );
+                messageField.innerText = data.message;
+                messageField.style.color = "green";
+              } else {
+                console.error("Error:", data.message);
+                const messageField = document.getElementById(
+                  "addItemMessageField"
+                );
+                messageField.innerText = data.message;
+                messageField.style.color = "red";
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+
+          this.reset();
+        });
+
+      // Handling the submission of the Search Items form
+      document
+        .getElementById("searchItemForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+        });
+
+      const searchCategory = document.getElementById("searchCategory");
+
+      // Fetch categories when typing in the search box
+      searchCategory.addEventListener("input", function () {
+        fetch("searchCategory.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `category=${encodeURIComponent(this.value)}`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const oldList = document.getElementById("autocomplete");
+            if (oldList) oldList.remove();
+
+            if (data.length > 0) {
+              // Create a datalist for autocomplete
+              const dataList = document.createElement("datalist");
+              dataList.id = "autocomplete";
+
+              // Add options to the datalist
+              data.forEach((item) => {
+                const option = document.createElement("option");
+                option.value = item.category;
+                dataList.appendChild(option);
+              });
+
+              // Add the datalist to the search box
+              searchCategory.setAttribute("list", "autocomplete");
+              searchCategory.after(dataList);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+      // Fetch items when a category is selected
+      function fetchItems() {
+        const isExpensiveChecked = document.getElementById("expensive").checked;
+        const categoryValue = searchCategory.value;
+        fetch("searchItem.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `category=${encodeURIComponent(
+            categoryValue
+          )}&expensive=${isExpensiveChecked}`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            if (data.length === 0) {
+              resultsDiv.innerText = "No items found.";
+            } else {
+              // Create a table to display the results
+              const table = document.createElement("table");
+
+              // Add table headers
+              const headers = Object.keys(data[0]);
+              const headerRow = document.createElement("tr");
+              headers.forEach((header) => {
+                const th = document.createElement("th");
+                th.innerText = header;
+                headerRow.appendChild(th);
+              });
+              table.appendChild(headerRow);
+
+              // Function to set the item name at the top of the review form
+              function setItemName(itemName) {
+                const itemNameElement = document.getElementById("itemName");
+                if (itemNameElement) {
+                  itemNameElement.innerText = itemName;
+                }
+              }
+
+              // Add table data
+              data.forEach((item) => {
+                const row = document.createElement("tr");
+                headers.forEach((header, index) => {
+                  const td = document.createElement("td");
+                  if (index === 0) {
+                    const a = document.createElement("a");
+                    a.href = "javascript:void(0);";
+                    a.onclick = function () {
+                      showSection("addReviewForm");
+                      setItemName(item[header]);
+                    };
+                    a.innerText = item[header];
+                    td.appendChild(a);
+                  } else {
+                    td.innerText = item[header];
+                  }
+                  row.appendChild(td);
+                });
+                table.appendChild(row);
+              });
+
+              resultsDiv.appendChild(table);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      const submitButton = document.getElementById("searchItemButton");
+      searchCategory.addEventListener("change", fetchItems);
+
+      // Fetch items when the submit button is clicked
+      submitButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        fetchItems();
+      });
+
+      // Handling Review Form submission
+      document
+        .getElementById("reviewForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const itemName = document.getElementById("itemName").innerText;
+          const rating = document.getElementById("rating").value;
+          const description =
+            document.getElementById("reviewDescription").value;
+
+          // Create a FormData object and append the form fields
+          const formData = new FormData();
+          formData.append("itemName", itemName);
+          formData.append("rating", rating);
+          formData.append("description", description);
+
+          // Send the FormData object to the PHP script
+          fetch("addReview.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                console.log("Review added successfully");
+                const messageField = document.getElementById(
+                  "addReviewMessageField"
+                );
+                messageField.innerText = data.message;
+                messageField.style.color = "green";
+              } else {
+                console.error("Error:", data.message);
+                const messageField = document.getElementById(
+                  "addReviewMessageField"
+                );
+                messageField.innerText = data.message;
+                messageField.style.color = "red";
+              }
+            })
+            .catch((error) => console.error(error));
+
+          this.reset();
+        });
+
+      // Fetch all users when the page loads
+      window.addEventListener("load", function () {
+        fetch("getAllUsers.php")
+          .then((response) => response.json())
+          .then((data) => {
+            // Get all the select elements by their IDs
+            const userSelect1 = document.getElementById("userXSelect");
+            const userSelect2 = document.getElementById("userXDropdown");
+            const userSelect3 = document.getElementById("userYDropdown");
+
+            // Add an option for each user
+            data.forEach((user) => {
+              const option1 = document.createElement("option");
+              option1.value = user.username;
+              option1.textContent = user.username;
+              userSelect1.appendChild(option1);
+
+              const option2 = option1.cloneNode(true);
+              userSelect2.appendChild(option2);
+
+              const option3 = option1.cloneNode(true);
+              userSelect3.appendChild(option3);
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+      // Function to fetch high rated items
+      function fetchUserXItems() {
+        const userSelect = document.getElementById("userXSelect");
+        const selectedUser = userSelect.value;
+
+        fetch("getHighRatedItems.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `user=${encodeURIComponent(selectedUser)}`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const resultsDiv = document.getElementById("userXItemsResults");
+            resultsDiv.innerHTML = "";
+
+            // Check if the data array is empty
+            if (data.length === 0) {
+              resultsDiv.innerHTML = `${selectedUser} does not have any high rated items`;
+            } else {
+              // Add a paragraph for each item
+              data.forEach((item) => {
+                const p = document.createElement("p");
+                p.textContent = item.title;
+                resultsDiv.appendChild(p);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Fetch and display users posting most items on a specific date
+      function fetchTopPosters() {
+        const date = document.getElementById("specificDate").value;
+        fetch(`getMostItems.php?date=${date}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Top posters data:", data);
+            let users;
+            if (data.length === 0) {
+              users = `No posts found on ${date}`;
+            } else {
+              users = data
+                .map(
+                  (user) =>
+                    `<div>${user.username} - ${user.postCount} posts</div>`
+                )
+                .join("");
+            }
+            document.getElementById("topPostersResults").innerHTML = users;
+          })
+          .catch((error) =>
+            console.error("Error fetching top posters:", error)
+          );
+      }
+
+      // Display All Users Who Never Posted Any "Excellent" Items
+      function fetchUsersWithNoExcellent() {
+        fetch(`getNoExcellentItems.php`)
+          .then((response) => response.json())
+          .then((data) => {
+            const users = data
+              .map((user) => `<div>${user.username}</div>`)
+              .join("");
+            document.getElementById("noExcellentItemsResults").innerHTML =
+              users;
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      //Display All Users Who Posted Only "Poor" Reviews
+      function fetchUsersWithOnlyPoor() {
+        fetch(`getOnlyPoorReviews.php`)
+          .then((response) => response.json())
+          .then((data) => {
+            let users;
+            if (data.length === 0) {
+              users = "No users found";
+            } else {
+              users = data
+                .map((user) => `<div>${user.username}</div>`)
+                .join("");
+            }
+            document.getElementById("onlyPoorReviewsResults").innerHTML = users;
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      // Fetch favorite users on page load
+      window.onload = function () {
+        fetchFavoriteUsers();
+      };
+
+      // Function to fetch favorite users
+      function fetchFavoriteUsers() {
+        fetch("getFavoriteUsers.php")
+          .then((response) => response.json())
+          .then((users) => {
+            let usersHTML = "";
+            users.forEach((user) => {
+              usersHTML += `
+                <div>
+                  <span>${user.username}</span>
+                  <span onclick="toggleFavorite('${user.username}')">
+                    <i data-username="${user.username}" class="${
+                user.isFavorite == "1"
+                  ? "fas fa-star yellow-star"
+                  : "far fa-star"
+              }"></i>
+                  </span>
+                </div>
+                `;
+            });
+            document.getElementById("favoriteUsersList").innerHTML = usersHTML;
+          });
+      }
+
+      // Function to toggle favorite status
+      function toggleFavorite(username) {
+        fetch(`toggleFavoriteUsers.php?username=${username}`, {
+          method: "POST",
+        }).then(() => {
+          let starElement = document.querySelector(
+            `i[data-username="${username}"]`
+          );
+          if (starElement.classList.contains("fas")) {
+            starElement.classList.replace("fas", "far");
+            starElement.classList.remove("yellow-star");
+          } else {
+            starElement.classList.replace("far", "fas");
+            starElement.classList.add("yellow-star");
+          }
+        });
+      }
+
+      // Fetch favorites of both users
+      function fetchFavoritesOfBoth() {
+        const userX = document.getElementById("userXDropdown").value;
+        const userY = document.getElementById("userYDropdown").value;
+
+        // Make an AJAX request to the server-side script
+        fetch(`getFavoritesOfBoth.php?userX=${userX}&userY=${userY}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const resultsDiv = document.getElementById(
+              "favoritesOfBothResults"
+            );
+            resultsDiv.innerHTML = "";
+
+            // Check if the data array is empty
+            if (data.length === 0) {
+              const p = document.createElement("p");
+              p.textContent = "There are no mutual favorites";
+              resultsDiv.appendChild(p);
+            } else {
+              data.forEach((favorite) => {
+                const p = document.createElement("p");
+                p.textContent = favorite.favorited_user;
+                resultsDiv.appendChild(p);
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>

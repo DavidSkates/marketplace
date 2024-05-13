@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Registration</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>User Registration</h2>
+      <form id="registrationForm">
+        <div>
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+          <small id="usernameError" style="color: red"></small>
+        </div>
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <div>
+          <label for="confirmPassword">Confirm Password:</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+          />
+          <small id="passwordError" style="color: red"></small>
+        </div>
+        <div>
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" name="firstName" required />
+        </div>
+        <div>
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" name="lastName" required />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div id="registrationError" style="color: red"></div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("registrationForm");
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form submission
+
+          // Initialization of validation flag
+          let formIsValid = true;
+
+          // Check for empty fields and passwords match
+          formIsValid = checkEmptyFields() && checkPasswordsMatch();
+
+          if (formIsValid) {
+            // Get form data
+            const formData = new FormData(form);
+
+            // Send form data to server
+            fetch("register.php", {
+              method: "POST",
+              body: new FormData(this),
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error("Network response was not ok");
+                }
+                return response.json();
+              })
+              .then((data) => {
+                // Check the response status
+                if (data.status === "success") {
+                  // Registration successful, redirect or show success message
+                  window.location.href = data.redirect;
+                  console.log(data.message);
+                  // window.location.replace("index.html"); // Redirect to a success page
+                } else {
+                  // Registration failed, display error message
+                  console.error(data.message);
+                  const errorField =
+                    document.getElementById("registrationError");
+                  errorField.innerText = data.message;
+                }
+              })
+              .catch((error) => {
+                console.error(
+                  "There was a problem with the fetch operation:",
+                  error
+                );
+                // Handle error, show error message to the user, etc.
+              });
+          }
+        });
+
+        function checkEmptyFields() {
+          const fields = [
+            "username",
+            "password",
+            "confirmPassword",
+            "firstName",
+            "lastName",
+            "email",
+          ];
+          let allFieldsFilled = true;
+
+          fields.forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            const errorField = document.getElementById(fieldId + "Error");
+            if (field && field.value.trim() === "") {
+              errorField.innerText = "This field cannot be empty";
+              allFieldsFilled = false;
+            } else if (errorField) {
+              errorField.innerText = ""; // Clear previous error message
+            }
+          });
+
+          return allFieldsFilled;
+        }
+
+        function checkPasswordsMatch() {
+          const password = document.getElementById("password").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
+          const errorField = document.getElementById("passwordError");
+
+          if (password !== confirmPassword) {
+            errorField.innerText = "Passwords need to match"; // Display error message
+            return false;
+          } else {
+            errorField.innerText = ""; // Clear previous error message
+            return true;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
